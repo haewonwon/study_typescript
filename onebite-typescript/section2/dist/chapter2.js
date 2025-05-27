@@ -12,4 +12,13 @@ let doubleArr = [
 // 길이와 타입이 고정된 배열
 let tup1 = [1, 2];
 let tup2 = [1, 'hello', true];
+tup1.push(3);
+tup1.pop();
+tup1.pop();
+tup1.pop();
+const users = [
+    ['김해원', 20],
+    ['이해원', 22],
+    ['박해원', 24],
+];
 export {};
