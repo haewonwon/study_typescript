@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useReducer } from 'react';
+import React, { useRef, useEffect, useReducer, useContext } from 'react';
 import Editor from './components/Editor';
 import TodoItem from './components/TodoItem';
 import { type Todo } from './types';
@@ -25,6 +25,20 @@ function reducer(state: Todo[], action: Action) {
       return state.filter((it) => it.id !== action.id);
     }
   }
+}
+
+// createContext: 하나의 타입 변수를 사용하는 제네릭 함수
+export const TodoStateContext = React.createContext<Todo[] | null>(null);
+export const TodoDispatchContext = React.createContext<{
+  onClickAdd: (text: string) => void;
+  onClickDelete: (id: number) => void;
+} | null>(null);
+
+export function useTodoDispatch() {
+  const dispatch = useContext(TodoDispatchContext);
+
+  if (!dispatch) throw Error('TodoDispatchContext에 문제가 있음');
+  return dispatch;
 }
 
 function App() {
@@ -68,12 +82,16 @@ function App() {
   return (
     <div>
       <h1>Todo</h1>
-      <Editor onClickAdd={onClickAdd} />
-      <div>
-        {todos.map((todo) => (
-          <TodoItem key={todo.id} {...todo} onClickDelete={onClickDelete} />
-        ))}
-      </div>
+      <TodoStateContext.Provider value={todos}>
+        <TodoDispatchContext.Provider value={{ onClickAdd, onClickDelete }}>
+          <Editor />
+          <div>
+            {todos.map((todo) => (
+              <TodoItem key={todo.id} {...todo} />
+            ))}
+          </div>
+        </TodoDispatchContext.Provider>
+      </TodoStateContext.Provider>
     </div>
   );
 }
